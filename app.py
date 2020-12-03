@@ -5,6 +5,7 @@ from control import *
 import lib
 import bullet
 import time
+from tank import *
 
 WIDTH = 500
 HEIGHT = 500
@@ -39,9 +40,25 @@ def read_config_file():
 
 def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    x=0
+    x= WIDTH
+    y= HEIGHT
+
+    tank = Tank(2,x,y)
+    tank.change(3,2)
+    tank.draw_tank()
+
+    tank2 = Tank(1,x,y)
+
+    x= 20
+    y= 70
+    glRotatef(45, 0.0, 0.0, 1.0);
+    tank2.change(x,y)
+    tank2.draw_tank()
     
     glFlush()
-    time.sleep(0.1)
+    time.sleep(0.5)
     
     
     
