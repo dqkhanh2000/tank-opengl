@@ -1,8 +1,9 @@
 from OpenGL.GLUT import *
 from OpenGL.GL import *
 
-def drawOxy(x, y, step_x, step_y, point_size):
-    glLineWidth(1)
+def drawOxy(step_x, step_y):
+    HEIGHT=0.5
+    WIDTH=0.5
     glBegin(GL_LINES)
     glVertex2f(0, -y)
     glVertex2f(0, y)
