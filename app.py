@@ -29,9 +29,35 @@ def read_config_file():
             color = lib.convert_rgb_to_float(int(color[0]), int(color[1]), int(color[2]))
             BACKGROUND_COLOR = color
 
+def drawHexagon():
+    # glBegin(GL_QUADS)
+    # glColor3f(1,0.2,0.2)
+    # glVertex3f(0.0, 0.04, 0)
+    # glVertex3f(-30, 0.02, 0)
+    # glVertex3f(-0.03,-0.02, 0)
+    # glVertex3f(0.03, 0.02, 0)
+    # glEnd
+    # glBegin(GL_QUADS)
+    # glColor3f(0.5,0.5,1)
+    # glVertex3f(-0.03, -0.02, 0)
+    # glVertex3f(0.0, -0.04, 0)
+    # glVertex3f(0.03,-0.02, 0)
+    # glVertex3f(0.03, 0.02, 0)
+    # glEnd
+    glColor3f(1,0,1)
+    glBegin(GL_POINTS)
+    glVertex3fv((12,12,0))
+    glEnd()
+    glPointSize(4)
+    
+
 def draw():
     # lib.drawOxy(10, 10)
+    drawHexagon()
     glFlush()
+    
+    
+    
 
 def main():
     read_config_file()
@@ -43,6 +69,7 @@ def main():
     glutDisplayFunc(draw)
     init()
     glutMainLoop()
+   
 
 if __name__ == "__main__":
     main()
