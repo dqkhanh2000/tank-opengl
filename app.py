@@ -1,22 +1,24 @@
-
-from OpenGL.GLUT import *
+import os
 from OpenGL.GL import *
+import glfw
 import lib
 
 WIDTH = 500
 HEIGHT = 500
 BACKGROUND_COLOR = [0, 0, 0]
+pressing_key_1 = None
+pressing_key_2 = None
 
 def init():
     glClearColor(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2], 0)
-    glPointSize(4.0)
+    glPointSize(1)
     glMatrixMode(GL_PROJECTION)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glOrtho(-WIDTH, WIDTH, -HEIGHT, HEIGHT, -1, 1)
+    # glViewport(0, 0, WIDTH, HEIGHT)
 
 def read_config_file():
     global WIDTH, HEIGHT, BACKGROUND_COLOR
-    file = open("setup.dat", "r")
+    file = open(os.path.dirname(__file__)+"/setup.dat", "r")
     for line in file:
         line = line.strip()
         data = line.split('=')
@@ -30,19 +32,54 @@ def read_config_file():
             BACKGROUND_COLOR = color
 
 def draw():
-    # lib.drawOxy(10, 10)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    lib.drawOxy(WIDTH, HEIGHT, 100, 100, 4)
     glFlush()
+
+def handle_key(window, key, scancode, action, mods):
+
+    if action == glfw.PRESS:
+        if pressing_key_1 is not None and pressing_key_2 is not None:
+            pass
+        elif pressing_key_1 is None and pressing_key_2 is not None:
+            
+
+
+
+    
+    # if key == glfw.KEY_W and action == glfw.PRESS:
+    #     key_pressed()
+
+    # elif key == glfw.KEY_W and action == glfw.REPEAT:
+    #     key_W_pressed()
+
+    # elif key == glfw.KEY_A and action == glfw.REPEAT:
+    #     key_W_pressed()
+    
 
 def main():
     read_config_file()
-    glutInit()
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
-    glutInitWindowSize(640, 480)
-    glutInitWindowPosition(100, 100)
-    glutCreateWindow("Bien doi 2d")
-    glutDisplayFunc(draw)
+    if not glfw.init():
+        return
+    glfw.window_hint(glfw.RESIZABLE, glfw.FALSE)
+    window = glfw.create_window(WIDTH, HEIGHT, "TANK GAME", None, None)
+    if not window:
+        glfw.terminate()
+        return
+    glfw.make_context_current(window)
+
+    glfw.set_key_callback(window, handle_key)
     init()
-    glutMainLoop()
+    while not glfw.window_should_close(window):
+        draw()
+
+        # Swap front and back buffers
+        glfw.swap_buffers(window)
+
+        # Poll for and process events
+        glfw.poll_events()
+
+    glfw.terminate()
 
 if __name__ == "__main__":
     main()

@@ -1,25 +1,28 @@
 from OpenGL.GLUT import *
 from OpenGL.GL import *
 
-def drawOxy(step_x, step_y):
+def drawOxy(x, y, step_x, step_y, point_size):
+    glLineWidth(1)
     glBegin(GL_LINES)
-    glVertex2f(0, -HEIGHT)
-    glVertex2f(0, HEIGHT)
+    glVertex2f(0, -y)
+    glVertex2f(0, y)
 
-    glVertex2f(-WIDTH, 0)
-    glVertex2f(WIDTH, 0)
+    glVertex2f(-x, 0)
+    glVertex2f(x, 0)
 
     glEnd()
-    glPointSize(3)
+    glPointSize(point_size)
     glBegin(GL_POINTS)
-    for i in range(-WIDTH, WIDTH, step_x):
+    for i in range(0, x, step_x):
         glVertex2f(i, 0)
+        glVertex2f(-i, 0)
 
-    for i in range(-HEIGHT, HEIGHT, step_y):
+    for i in range(0, y, step_y):
         glVertex2f(0, i)
+        glVertex2f(0, -i)
 
     glEnd()
-    glPointSize(POINT_SIZE)
+    
 
 def tranform (point_2d = [], matrix = []):
     """
