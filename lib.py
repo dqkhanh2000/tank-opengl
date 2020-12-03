@@ -22,7 +22,6 @@ def drawOxy(x, y, step_x, step_y, point_size):
         glVertex2f(0, -i)
 
     glEnd()
-    
 
 def tranform (point_2d = [], matrix = []):
     """

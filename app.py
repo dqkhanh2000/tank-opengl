@@ -1,13 +1,14 @@
 import os
 from OpenGL.GL import *
 import glfw
+from control import *
 import lib
 
 WIDTH = 500
 HEIGHT = 500
 BACKGROUND_COLOR = [0, 0, 0]
-pressing_key_1 = None
-pressing_key_2 = None
+player_1_control = TankControl()
+player_2_control = TankControl()
 
 def init():
     glClearColor(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2], 0)
@@ -37,25 +38,35 @@ def draw():
     glFlush()
 
 def handle_key(window, key, scancode, action, mods):
+    if action != glfw.REPEAT:
 
-    if action == glfw.PRESS:
-        if pressing_key_1 is not None and pressing_key_2 is not None:
-            pass
-        elif pressing_key_1 is None and pressing_key_2 is not None:
-            
+        # palyer 1 control
+        if key == glfw.KEY_W:
+            player_1_control.set_move(TOP, action)
+        elif key == glfw.KEY_S:
+            player_1_control.set_move(BOTTOM, action)
+        elif key == glfw.KEY_A:
+            player_1_control.set_move(LEFT, action)
+        elif key == glfw.KEY_D:
+            player_1_control.set_move(RIGHT, action)
+        elif key == glfw.KEY_V:
+            player_1_control.set_move(BARREL_LEFT, action)
+        elif key == glfw.KEY_B:
+            player_1_control.set_move(BARREL_RIGHT, action)
 
-
-
-    
-    # if key == glfw.KEY_W and action == glfw.PRESS:
-    #     key_pressed()
-
-    # elif key == glfw.KEY_W and action == glfw.REPEAT:
-    #     key_W_pressed()
-
-    # elif key == glfw.KEY_A and action == glfw.REPEAT:
-    #     key_W_pressed()
-    
+        # palyer 2 control
+        elif key == glfw.KEY_UP:
+            player_2_control.set_move(TOP, action)
+        elif key == glfw.KEY_DOWN:
+            player_2_control.set_move(BOTTOM, action)
+        elif key == glfw.KEY_LEFT:
+            player_2_control.set_move(LEFT, action)
+        elif key == glfw.KEY_RIGHT:
+            player_2_control.set_move(RIGHT, action)
+        elif key == glfw.KEY_LEFT_BRACKET:
+            player_2_control.set_move(BARREL_LEFT, action)
+        elif key == glfw.KEY_RIGHT_BRACKET:
+            player_2_control.set_move(BARREL_RIGHT, action)
 
 def main():
     read_config_file()
@@ -70,9 +81,12 @@ def main():
 
     glfw.set_key_callback(window, handle_key)
     init()
+    
     while not glfw.window_should_close(window):
         draw()
 
+        state_player_1 = player_1_control.state()
+        state_player_2 = player_2_control.state()
         # Swap front and back buffers
         glfw.swap_buffers(window)
 
