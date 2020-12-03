@@ -2,13 +2,15 @@ import os
 from OpenGL.GL import *
 import glfw
 import lib
+import bullet
+import time
 
 WIDTH = 500
 HEIGHT = 500
 BACKGROUND_COLOR = [0, 0, 0]
 pressing_key_1 = None
 pressing_key_2 = None
-
+bu = bullet.Bullet([10,10],[2,2])
 def init():
     glClearColor(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2], 0)
     glPointSize(1)
@@ -36,8 +38,12 @@ def read_config_file():
 
 def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    lib.drawOxy(WIDTH, HEIGHT, 100, 100, 4)
+    
+    bu.changeCoordinates()
+    bu.drawBullet()
+    # lib.drawOxy(WIDTH, HEIGHT, 100, 100, 4)
     glFlush()
+    time.sleep(0.1)
     
     
     
@@ -48,6 +54,7 @@ def handle_key(window, key, scancode, action, mods):
         if pressing_key_1 is not None and pressing_key_2 is not None:
             pass
         elif pressing_key_1 is None and pressing_key_2 is not None:
+            pass
             
 
 

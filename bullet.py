@@ -1,25 +1,20 @@
+from OpenGL.GLUT import *
+from OpenGL.GL import *
 class Bullet:
-    def __init__(self, name, age):
-      self.name = name
-      self.age = age
+    def __init__(self, coordinates, direction):
+      self.coordinates = coordinates
+      self.direction = direction
+      self.withB = 8
+      self.heightB = 8
 
-    def drawHexagon(self):
-        # glBegin(GL_QUADS)
-        # glColor3f(1,0.2,0.2)
-        # glVertex3f(0.0, 0.04, 0)
-        # glVertex3f(-30, 0.02, 0)
-        # glVertex3f(-0.03,-0.02, 0)
-        # glVertex3f(0.03, 0.02, 0)
-        # glEnd
-        # glBegin(GL_QUADS)
-        # glColor3f(0.5,0.5,1)
-        # glVertex3f(-0.03, -0.02, 0)
-        # glVertex3f(0.0, -0.04, 0)
-        # glVertex3f(0.03,-0.02, 0)
-        # glVertex3f(0.03, 0.02, 0)
-        # glEnd
+    def drawBullet(self):
+        changeCoordinates(self)
         glColor3f(1,0,1)
         glBegin(GL_POINTS)
-        glVertex3fv((12,12,0))
+        glVertex3fv((self.coordinates[0],self.coordinates[1],0))
         glEnd()
         glPointSize(4)
+    def changeCoordinates():
+        coordinates[0]=coordinates[0]+direction[0]
+        coordinates[1]=coordinates[1]+direction[1]
+        
