@@ -3,6 +3,8 @@ from OpenGL.GL import *
 import glfw
 from control import *
 import lib
+import bullet
+import time
 
 WIDTH = 500
 HEIGHT = 500
@@ -32,14 +34,21 @@ def read_config_file():
             color = lib.convert_rgb_to_float(int(color[0]), int(color[1]), int(color[2]))
             BACKGROUND_COLOR = color
 
+
+    
+
 def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    lib.drawOxy(WIDTH, HEIGHT, 100, 100, 4)
+    
     glFlush()
+    time.sleep(0.1)
+    
+    
+    
 
 def handle_key(window, key, scancode, action, mods):
     if action != glfw.REPEAT:
-
+    
         # palyer 1 control
         if key == glfw.KEY_W:
             player_1_control.set_move(TOP, action)
