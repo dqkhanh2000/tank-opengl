@@ -12,15 +12,19 @@ BARREL_STOP = 10
 BARREL_LEFT = 11
 BARREL_RIGHT = 12
 
+ROTATE_DEGRE = 3
+MOVE_SPEED = 4
+
 
 class TankControl:
-    def __init__(self):
+    def __init__(self, tank):
         self.top = False
         self.bottom =  False
         self.left =  False
         self.right =  False
         self.barrel_left =  False
         self.barrel_right =  False
+        self.tank = tank
 
     def state(self):
         if self.top and self.left:
@@ -92,20 +96,55 @@ class TankControl:
         # key release
         if action == 0:
             if key == BARREL_LEFT:
-                self.barrel_left == False
+                self.barrel_left = False
             if key == BARREL_RIGHT:
-                self.barrel_right == False
+                self.barrel_right = False
         
         # key press
         elif action == 1:
             if key == BARREL_LEFT:
                 if not self.barrel_left: 
-                    self.barrel_left == True
+                    self.barrel_left = True
                 if self.barrel_right:
-                    self.barrel_right == False
+                    self.barrel_right = False
             if key == BARREL_RIGHT:
                 if not self.barrel_right:
-                    self.barrel_right == True
+                    self.barrel_right = True
                 if self.barrel_left: 
-                    self.barrel_left == False
-                
+                    self.barrel_left = False
+
+    def handle_state(self):
+        state = self.state()
+        if state == TOP:
+            self.tank.y += MOVE_SPEED
+            
+        elif state == BOTTOM:
+            self.tank.y -= MOVE_SPEED
+        elif state == LEFT:
+            self.tank.x -= MOVE_SPEED
+        elif state == RIGHT:
+            self.tank.x += MOVE_SPEED
+        elif state == TOP_LEFT:
+            self.tank.tank_direction += ROTATE_DEGRE
+            self.tank.x -= MOVE_SPEED
+            self.tank.y += MOVE_SPEED
+        elif state == TOP_RIGHT:
+            self.tank.tank_direction -= ROTATE_DEGRE
+            self.tank.x += MOVE_SPEED
+            self.tank.y += MOVE_SPEED
+        elif state == BOTTOM_LEFT:
+            self.tank.tank_direction += ROTATE_DEGRE
+            self.tank.x -= MOVE_SPEED
+            self.tank.y -= MOVE_SPEED
+        elif state == BOTTOM_RIGHT:
+            self.tank.tank_direction -= ROTATE_DEGRE
+            self.tank.x += MOVE_SPEED
+            self.tank.y -= MOVE_SPEED
+
+        if self.barrel_state() == BARREL_LEFT:
+            self.tank.barrel_direction += ROTATE_DEGRE
+        elif self.barrel_state() == BARREL_RIGHT:
+            self.tank.barrel_direction -= ROTATE_DEGRE
+
+        self.tank.calculate_arg()
+
