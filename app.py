@@ -5,19 +5,20 @@ MOVE_SPEED = 50
 ROTATE_DEGRE = 20
 
 import os
-from OpenGL.GL import *
 import glfw
 from control import *
 import lib
-import bullet
 import time
 from tank import *
+from bullet import *
 
-tank = Tank(50, 500, 100)
-tank2 = Tank(0, 0, 100, 30, 70, (255, 20, 0))
+tank = Tank(50, 500, 50)
+tank2 = Tank(30, 50, 50, 30, 70, (255, 20, 0))
 player_1_control = TankControl(tank)
 player_2_control = TankControl(tank2)
 
+tank.set_enemy_tank(tank2)
+tank2.set_enemy_tank(tank)
 
 def init():
     glClearColor(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2], 0)
@@ -29,7 +30,7 @@ def init():
     glEnable(GL_BLEND)
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glOrtho(-WIDTH, WIDTH, -HEIGHT, HEIGHT, -1, 1)
+    glOrtho(0, WIDTH, 0, HEIGHT, -1, 1)
 
 def read_config_file():
     global WIDTH, HEIGHT, BACKGROUND_COLOR
@@ -48,9 +49,26 @@ def read_config_file():
 
 def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    # glColor3f(1, 0, 0)
+    # glPointSize(10)
+    # glBegin(GL_POINTS)
+    # glVertex2f(10, 10)
+    # glEnd()
+
+    # a =glReadPixels(10, 10,1,1,GL_RGB,GL_FLOAT)
+    # print(a[0][0][0], a[1][0][0], a[2][0][0])
     tank.draw()
+
+    for tank1_bullet in tank.list_bullet:
+        if tank1_bullet.is_out_map(WIDTH, HEIGHT):
+            tank.list_bullet.remove(tank1_bullet)
+        else: tank1_bullet.draw()
+
     tank2.draw()
-    drawOxy(WIDTH, HEIGHT, 50, 50, 3)
+    for tank2_bullet in tank2.list_bullet:
+        if tank2_bullet.is_out_map(WIDTH, HEIGHT):
+            tank2.list_bullet.remove(tank2_bullet)
+        else: tank2_bullet.draw()
     glFlush()
     
 def handle_key(window, key, scancode, action, mods):
@@ -100,10 +118,7 @@ def main():
     
     while not glfw.window_should_close(window):
         draw()
-        # time.sleep(0.05)
-
-        # state_player_1 = player_1_control.state()
-        # state_player_2 = player_2_control.state()
+        
         player_1_control.handle_state()
         player_2_control.handle_state()
 

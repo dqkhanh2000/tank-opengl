@@ -1,8 +1,10 @@
 {
-<<<<<<< HEAD
     "python.pythonPath": "/usr/bin/python3",
-    "python.autoComplete.extraPaths": ["./root_folder"]
+    "python.autoComplete.extraPaths": [
+        "./root_folder"
+    ],
+    "python.analysis.extraPaths": [
+        "./root_folder"
+    ]
 
-=======
->>>>>>> 0f29d3f29365f6b41e6261907a57c0b2e37871d5
 }

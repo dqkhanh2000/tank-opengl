@@ -1,5 +1,11 @@
+from bullet import Bullet
 from lib import *
-from math import pi, sin, cos
+from control import *
+
+ROTATE_DEGRE = 3
+MOVE_SPEED = 2
+MAP_WIDTH = 480 - 50
+MAP_HEIGHT = 640 - 50
 
 
 class Tank:
@@ -11,13 +17,16 @@ class Tank:
         self.barrel_direction = barrel_direction
         self.tank_color = tank_color
         self.border_size = border_size
+        self.list_bullet = []
         self.calculate_arg()
+        self.count_repeat = 0;
 
     def init_arg(self):
         size = int(self.tank_size / 2)
         border_size = int(size/3)
         self.barrel_radius = size-border_size
-        barrel_height = int(size/5)
+        self.barrel_height = int(size/5)
+        self.barrel_position = self.barrel_radius + size - self.barrel_height
 
         self.points_body =[
             [-(size-border_size), -size],
@@ -55,51 +64,39 @@ class Tank:
         ]
 
         self.points_barrel = [
-            [(self.barrel_radius+size), barrel_height],
-            [(self.barrel_radius - barrel_height), barrel_height],
-            [(self.barrel_radius - barrel_height), -barrel_height],
-            [(self.barrel_radius+size), -barrel_height]
+            [self.barrel_position, self.barrel_height],
+            [(self.barrel_radius - self.barrel_height), self.barrel_height],
+            [(self.barrel_radius - self.barrel_height), - self.barrel_height],
+            [(self.barrel_position), - self.barrel_height]
         ]
         
     def calculate_arg(self):
         self.init_arg()
         rad_tank = self.tank_direction * (pi/180)
         rad_barrel = self.barrel_direction * (pi/180)
-        rotate_tank = [
+        matrix_move_tank = [
             [cos(rad_tank), sin(rad_tank), 0],
             [-sin(rad_tank), cos(rad_tank), 0],
-            [0, 0, 1]
+            [self.x, self.y, 1]
         ]
 
-        move_matrix = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [self.x, self.y, 0]
-        ]
-
-        rotate_barrel = [
+        matrix_move_barrel = [
             [cos(rad_barrel), sin(rad_barrel), 0],
             [-sin(rad_barrel), cos(rad_barrel), 0],
-            [0, 0, 1]
+            [self.x, self.y, 1]
         ]
         
-        self.points_body = tranform_points(self.points_body, rotate_tank)
-        self.points_body = tranform_points(self.points_body, move_matrix)
+        self.points_body = tranform_points(self.points_body, matrix_move_tank)
 
-        self.points_border_bottom_left = tranform_points(self.points_border_bottom_left, rotate_tank)
-        self.points_border_bottom_left = tranform_points(self.points_border_bottom_left, move_matrix)
+        self.points_border_bottom_left = tranform_points(self.points_border_bottom_left, matrix_move_tank)
 
-        self.points_border_bottom_right = tranform_points(self.points_border_bottom_right, rotate_tank)
-        self.points_border_bottom_right = tranform_points(self.points_border_bottom_right, move_matrix)
+        self.points_border_bottom_right = tranform_points(self.points_border_bottom_right, matrix_move_tank)
 
-        self.points_border_top_left = tranform_points(self.points_border_top_left, rotate_tank)
-        self.points_border_top_left = tranform_points(self.points_border_top_left, move_matrix)
+        self.points_border_top_left = tranform_points(self.points_border_top_left, matrix_move_tank)
 
-        self.points_border_top_right = tranform_points(self.points_border_top_right, rotate_tank)
-        self.points_border_top_right = tranform_points(self.points_border_top_right, move_matrix)
+        self.points_border_top_right = tranform_points(self.points_border_top_right, matrix_move_tank)
 
-        self.points_barrel = tranform_points(self.points_barrel, rotate_barrel)
-        self.points_barrel = tranform_points(self.points_barrel, move_matrix)
+        self.points_barrel = tranform_points(self.points_barrel, matrix_move_barrel)
 
     def draw(self):
         # draw tank body
@@ -165,5 +162,189 @@ class Tank:
         draw_circle(self.x, self.y, self.barrel_radius)
         glEnd()
 
+    def set_enemy_tank(self, enemy):
+        self.enemy = enemy
 
-        
+    def tank_move(self, state):
+        if state == TOP:
+            if self.tank_direction < 90:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 90:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.y < MAP_HEIGHT + self.tank_size/2 - self.border_size:
+                t1 = abs(self.y + MOVE_SPEED - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y < MAP_HEIGHT + self.tank_size/2 - self.border_size:
+                        self.y += 2
+                        self.enemy.y +=2
+                else :
+                    self.y += MOVE_SPEED
+
+        elif state == BOTTOM:
+            if self.tank_direction < 90:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 90:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.y > 0 + self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - MOVE_SPEED*2 - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y > 0 + self.tank_size/2 + self.border_size:
+                        self.y -= 2
+                        self.enemy.y -= 2
+                else :
+                    self.y -= MOVE_SPEED
+
+        elif state == LEFT:
+            if self.tank_direction < 90:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 90:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x > self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x - MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x > self.tank_size/2 + self.border_size:
+                        self.x -= 2
+                        self.enemy.x -= 2
+                else :
+                    self.x -= MOVE_SPEED
+
+        elif state == RIGHT:
+            if self.tank_direction < 90:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 90:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x < MAP_WIDTH + self.tank_size/2 - self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x + MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x < MAP_WIDTH + self.tank_size/2 - self.border_size:
+                        self.x += 2
+                        self.enemy.x += 2
+                else :
+                    self.x += MOVE_SPEED
+
+        elif state == TOP_LEFT:
+            if self.tank_direction < 135:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 135:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x > self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x - MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x > self.tank_size/2 + self.border_size:
+                        self.x -= 2
+                        self.enemy.x -= 2
+                else :
+                    self.x -= MOVE_SPEED
+            if self.y < MAP_HEIGHT - self.tank_size/2 - self.border_size:
+                t1 = abs(self.y + MOVE_SPEED - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y < MAP_HEIGHT + self.tank_size/2 - self.border_size:
+                        self.y += 2
+                        self.enemy.y +=2
+                else :
+                    self.y += MOVE_SPEED
+
+        elif state == TOP_RIGHT:
+            if self.tank_direction < 45:
+                self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 45:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x < MAP_WIDTH - self.tank_size/2 - self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x + MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x < MAP_WIDTH + self.tank_size/2 - self.border_size:
+                        self.x += 2
+                        self.enemy.x += 2
+                else :
+                    self.x += MOVE_SPEED
+            if self.y < MAP_HEIGHT - self.tank_size/2 - self.border_size:
+                t1 = abs(self.y + MOVE_SPEED - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y < MAP_HEIGHT + self.tank_size/2 - self.border_size:
+                        self.y += 2
+                        self.enemy.y +=2
+                else :
+                    self.y += MOVE_SPEED
+
+        elif state == BOTTOM_LEFT:
+            if self.tank_direction < 45:
+                    self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 45:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x > self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x - MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x > self.tank_size/2 + self.border_size:
+                        self.x -= 2
+                        self.enemy.x -= 2
+                else :
+                    self.x -= MOVE_SPEED
+            if self.y > self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - MOVE_SPEED*2 - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y > 0 + self.tank_size/2 + self.border_size:
+                        self.y -= 2
+                        self.enemy.y -= 2
+                else :
+                    self.y -= MOVE_SPEED
+        elif state == BOTTOM_RIGHT:
+            if self.tank_direction < 135:
+                    self.tank_direction += ROTATE_DEGRE
+            elif self.tank_direction > 135:
+                self.tank_direction -= ROTATE_DEGRE
+            if self.x < MAP_WIDTH - self.tank_size/2 - self.border_size:
+                t1 = abs(self.y - self.enemy.y)
+                t2 = abs(self.x + MOVE_SPEED*2 - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.x < MAP_WIDTH + self.tank_size/2 - self.border_size:
+                        self.x += 2
+                        self.enemy.x += 2
+                else :
+                    self.x += MOVE_SPEED
+            if self.y > self.tank_size/2 + self.border_size:
+                t1 = abs(self.y - MOVE_SPEED*2 - self.enemy.y)
+                t2 = abs(self.x - self.enemy.x)
+
+                if t1 > -self.tank_size and t1 < self.tank_size and t1 > -self.tank_size and t2 < self.tank_size:
+                    if self.enemy.y > 0 + self.tank_size/2 + self.border_size:
+                        self.y -= 2
+                        self.enemy.y -= 2
+                else :
+                    self.y -= MOVE_SPEED
+
+    def barrel_move(self, state):
+        if self.count_repeat > 10:
+            new_bullet = Bullet(self.points_barrel[0][0], self.points_barrel[0][1], self.barrel_direction, self.tank_color)
+            self.list_bullet.append(new_bullet)
+            self.count_repeat = 0
+
+        if state == BARREL_LEFT:
+            self.barrel_direction += ROTATE_DEGRE
+            self.count_repeat +=1
+        elif state == BARREL_RIGHT:
+            self.barrel_direction -= ROTATE_DEGRE
+            self.count_repeat +=1
+
+        if self.barrel_direction >= 360:
+            self.barrel_direction = 360 - self.barrel_direction

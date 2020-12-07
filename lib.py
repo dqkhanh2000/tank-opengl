@@ -1,6 +1,5 @@
-from OpenGL.GLUT import *
 from OpenGL.GL import *
-from math import *
+from math import pi, sin, cos, factorial, pow
 
 def drawOxy(x, y, step_x, step_y, point_size):
     glLineWidth(1)

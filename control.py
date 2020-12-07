@@ -12,9 +12,6 @@ BARREL_STOP = 10
 BARREL_LEFT = 11
 BARREL_RIGHT = 12
 
-ROTATE_DEGRE = 3
-MOVE_SPEED = 4
-
 
 class TankControl:
     def __init__(self, tank):
@@ -114,37 +111,10 @@ class TankControl:
                     self.barrel_left = False
 
     def handle_state(self):
-        state = self.state()
-        if state == TOP:
-            self.tank.y += MOVE_SPEED
-            
-        elif state == BOTTOM:
-            self.tank.y -= MOVE_SPEED
-        elif state == LEFT:
-            self.tank.x -= MOVE_SPEED
-        elif state == RIGHT:
-            self.tank.x += MOVE_SPEED
-        elif state == TOP_LEFT:
-            self.tank.tank_direction += ROTATE_DEGRE
-            self.tank.x -= MOVE_SPEED
-            self.tank.y += MOVE_SPEED
-        elif state == TOP_RIGHT:
-            self.tank.tank_direction -= ROTATE_DEGRE
-            self.tank.x += MOVE_SPEED
-            self.tank.y += MOVE_SPEED
-        elif state == BOTTOM_LEFT:
-            self.tank.tank_direction += ROTATE_DEGRE
-            self.tank.x -= MOVE_SPEED
-            self.tank.y -= MOVE_SPEED
-        elif state == BOTTOM_RIGHT:
-            self.tank.tank_direction -= ROTATE_DEGRE
-            self.tank.x += MOVE_SPEED
-            self.tank.y -= MOVE_SPEED
+        tank_state = self.state()
+        barrel_state = self.barrel_state()
 
-        if self.barrel_state() == BARREL_LEFT:
-            self.tank.barrel_direction += ROTATE_DEGRE
-        elif self.barrel_state() == BARREL_RIGHT:
-            self.tank.barrel_direction -= ROTATE_DEGRE
-
+        self.tank.tank_move(tank_state)
+        self.tank.barrel_move(barrel_state)
         self.tank.calculate_arg()
 
