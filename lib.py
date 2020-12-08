@@ -1,5 +1,5 @@
 from OpenGL.GL import *
-from math import pi, sin, cos, factorial, pow
+from math import pi, sin, cos, factorial, pow, sqrt
 
 def drawOxy(x, y, step_x, step_y, point_size):
     glLineWidth(1)
@@ -86,6 +86,11 @@ def __draw8point(xc, yc, x, y):
     glVertex2f(xc - y, yc - x)
     glVertex2f(xc - y, yc + x)
     glVertex2f(xc - x, yc + y)
+
+def calculate_distance_2_points(x1, y1, x2, y2):
+    t1 = pow((x2-x1), 2)
+    t2 = pow((y2-y1), 2)
+    return sqrt(t1+t2)
 
 def draw_circle(xc, yc, r):
     """just include glVertex2f, must insert glBegin and glEnd

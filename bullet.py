@@ -22,6 +22,7 @@ class Bullet:
             [int(x_direction), int(y_direction), 0]
         ]
 
+
     def draw(self):
         glColor3ubv(self.color)
         glBegin(GL_POLYGON)
@@ -42,3 +43,15 @@ class Bullet:
         if abs(self.x) > map_width + self.size or abs(self.y) > map_height + self.size:
             return True
         return False
+
+    def check_hit_target(self, enemy):
+        if calculate_distance_2_points(self.x, self.y, enemy.x, enemy.y) <= self.size + enemy.tank_size/2:
+            return True
+        return False
+
+    def check_hit_bullet(self, list_bullet):
+        for bullet in list_bullet:
+            if calculate_distance_2_points(self.x, self.y, bullet.x, bullet.y) <= self.size*2 + self.border_size:
+                return bullet
+        return False
+        

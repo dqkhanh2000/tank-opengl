@@ -59,16 +59,31 @@ def draw():
     # print(a[0][0][0], a[1][0][0], a[2][0][0])
     tank.draw()
 
-    for tank1_bullet in tank.list_bullet:
-        if tank1_bullet.is_out_map(WIDTH, HEIGHT):
-            tank.list_bullet.remove(tank1_bullet)
-        else: tank1_bullet.draw()
+    for bullet in tank.list_bullet:
+
+        b = bullet.check_hit_bullet(tank2.list_bullet)
+        if b != False:
+            tank2.list_bullet.remove(b)
+            tank.list_bullet.remove(bullet)
+        elif bullet.is_out_map(WIDTH, HEIGHT):
+            tank.list_bullet.remove(bullet)
+        elif bullet.check_hit_target(tank2):
+            tank2.current_blood -= 20
+            tank.list_bullet.remove(bullet)
+        else: bullet.draw()
 
     tank2.draw()
-    for tank2_bullet in tank2.list_bullet:
-        if tank2_bullet.is_out_map(WIDTH, HEIGHT):
-            tank2.list_bullet.remove(tank2_bullet)
-        else: tank2_bullet.draw()
+    for bullet in tank2.list_bullet:
+        b = bullet.check_hit_bullet(tank.list_bullet)
+        if b != False:
+            tank.list_bullet.remove(b)
+            tank2.list_bullet.remove(bullet)
+        elif bullet.is_out_map(WIDTH, HEIGHT):
+            tank2.list_bullet.remove(bullet)
+        elif bullet.check_hit_target(tank):
+            tank.current_blood -= 20
+            tank2.list_bullet.remove(bullet)
+        else: bullet.draw()
     glFlush()
     
 def handle_key(window, key, scancode, action, mods):
