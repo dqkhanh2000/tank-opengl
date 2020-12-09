@@ -11,6 +11,8 @@ import lib
 import time
 from tank import *
 from bullet import *
+from word import *
+from word_2 import *
 
 tank = Tank(50, 500, 50)
 tank2 = Tank(30, 50, 50, 30, 70, (255, 20, 0))
@@ -59,16 +61,33 @@ def draw():
     # print(a[0][0][0], a[1][0][0], a[2][0][0])
     tank.draw()
 
-    for tank1_bullet in tank.list_bullet:
-        if tank1_bullet.is_out_map(WIDTH, HEIGHT):
-            tank.list_bullet.remove(tank1_bullet)
-        else: tank1_bullet.draw()
+    for bullet in tank.list_bullet:
+
+        b = bullet.check_hit_bullet(tank2.list_bullet)
+        if b != False:
+            tank2.list_bullet.remove(b)
+            tank.list_bullet.remove(bullet)
+        elif bullet.is_out_map(WIDTH, HEIGHT):
+            tank.list_bullet.remove(bullet)
+        elif bullet.check_hit_target(tank2):
+            tank2.current_blood -= 20
+            tank.list_bullet.remove(bullet)
+        else: bullet.draw()
 
     tank2.draw()
-    for tank2_bullet in tank2.list_bullet:
-        if tank2_bullet.is_out_map(WIDTH, HEIGHT):
-            tank2.list_bullet.remove(tank2_bullet)
-        else: tank2_bullet.draw()
+    for bullet in tank2.list_bullet:
+        b = bullet.check_hit_bullet(tank.list_bullet)
+        if b != False:
+            tank.list_bullet.remove(b)
+            tank2.list_bullet.remove(bullet)
+        elif bullet.is_out_map(WIDTH, HEIGHT):
+            tank2.list_bullet.remove(bullet)
+        elif bullet.check_hit_target(tank):
+            tank.current_blood -= 20
+            # print(tank.current_blood)
+            tank2.list_bullet.remove(bullet)
+        else: bullet.draw()
+        
     glFlush()
     
 def handle_key(window, key, scancode, action, mods):
@@ -117,10 +136,34 @@ def main():
     init()
     
     while not glfw.window_should_close(window):
-        draw()
+        if tank.current_blood == -100:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            word = Word(80, 120, 2)
+            word.draw_word()
+            draw_num_2(120, 200 , 0.5)
+            drawW(190, 200 , 0.5)
+            drawI(270, 200 , 0.5)
+            drawN(350, 200 , 0.5)
+            # time.sleep(2)
+            # break
+        elif tank2.current_blood == -100:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            word = Word(80, 120, 2)
+            word.draw_word()
+            draw_num_1(120, 200 , 0.7)
+            drawW(190, 200 , 0.7)
+            drawI(270, 200 , 0.7)
+            drawN(350, 200 , 0.7)
+            # time.sleep(2)
+            # break
+        else:
+            player_1_control.handle_state()
+            player_2_control.handle_state()
+            draw()
         
-        player_1_control.handle_state()
-        player_2_control.handle_state()
+        # draw()
+
+        
 
         # Swap front and back buffers
         glfw.swap_buffers(window)

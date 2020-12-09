@@ -1,7 +1,7 @@
 from lib import *
 
 class Bullet:
-    def __init__(self, x, y, direction, color = (50, 120, 170), size = 7, border_size = 3, speed = 4):
+    def __init__(self, x, y, direction, color = (50, 120, 170), size = 7, border_size = 3, speed = 5):
         self.x = x
         self.y = y
         self.direction = direction
@@ -21,6 +21,7 @@ class Bullet:
             [0, 1, 0],
             [int(x_direction), int(y_direction), 0]
         ]
+
 
     def draw(self):
         glColor3ubv(self.color)
@@ -42,3 +43,15 @@ class Bullet:
         if abs(self.x) > map_width + self.size or abs(self.y) > map_height + self.size:
             return True
         return False
+
+    def check_hit_target(self, enemy):
+        if calculate_distance_2_points(self.x, self.y, enemy.x, enemy.y) <= self.size + enemy.tank_size/2:
+            return True
+        return False
+
+    def check_hit_bullet(self, list_bullet):
+        for bullet in list_bullet:
+            if calculate_distance_2_points(self.x, self.y, bullet.x, bullet.y) <= self.size*2 + self.border_size:
+                return bullet
+        return False
+        

@@ -9,7 +9,7 @@ MAP_HEIGHT = 640 - 50
 
 
 class Tank:
-    def __init__(self, x, y, tank_size, tank_direction = 0, barrel_direction = 0, tank_color = (50, 120, 170), border_size = 3):
+    def __init__(self, x, y, tank_size, tank_direction = 0, barrel_direction = 0, tank_color = (50, 120, 170), border_size = 3, blood = 100):
         self.x = x
         self.y = y
         self.tank_size = tank_size
@@ -17,6 +17,7 @@ class Tank:
         self.barrel_direction = barrel_direction
         self.tank_color = tank_color
         self.border_size = border_size
+        self.current_blood = blood
         self.list_bullet = []
         self.calculate_arg()
         self.count_repeat = 0;
@@ -69,6 +70,20 @@ class Tank:
             [(self.barrel_radius - self.barrel_height), - self.barrel_height],
             [(self.barrel_position), - self.barrel_height]
         ]
+
+        self.points_blood = [
+            [-(self.barrel_radius - 2*self.border_size) , -self.border_size],
+            [-(self.barrel_radius - 2*self.border_size) , self.border_size],
+            [(self.barrel_radius - 2*self.border_size) , self.border_size],
+            [(self.barrel_radius - 2*self.border_size) , -self.border_size],
+        ]
+
+        self.points_current_blood = [
+            [-(self.barrel_radius - 2*self.border_size) , -self.border_size],
+            [-(self.barrel_radius - 2*self.border_size) , self.border_size],
+            [self.current_blood*(self.barrel_radius - 2*self.border_size)/100 , self.border_size],
+            [self.current_blood*(self.barrel_radius - 2*self.border_size)/100 , -self.border_size],
+        ]
         
     def calculate_arg(self):
         self.init_arg()
@@ -97,6 +112,15 @@ class Tank:
         self.points_border_top_right = tranform_points(self.points_border_top_right, matrix_move_tank)
 
         self.points_barrel = tranform_points(self.points_barrel, matrix_move_barrel)
+
+        matrix_move_blood = [
+            [cos(0), sin(0), 0],
+            [-sin(0), cos(0), 0],
+            [self.x, self.y, 1]
+        ]
+        
+        self.points_blood = tranform_points(self.points_blood, matrix_move_blood)
+        self.points_current_blood = tranform_points(self.points_current_blood, matrix_move_blood)
 
     def draw(self):
         # draw tank body
@@ -162,6 +186,19 @@ class Tank:
         draw_circle(self.x, self.y, self.barrel_radius)
         glEnd()
 
+
+        # draw blood
+        glColor3f(0, 1, 0)
+        glBegin(GL_POLYGON)
+        draw_points(self.points_current_blood)
+        glEnd()
+
+        glLineWidth(1)
+        glColor3f(0, 0, 0)
+        glBegin(GL_LINE_LOOP)
+        draw_points(self.points_blood)
+        glEnd()
+
     def set_enemy_tank(self, enemy):
         self.enemy = enemy
 
@@ -181,7 +218,6 @@ class Tank:
                         self.enemy.y +=2
                 else :
                     self.y += MOVE_SPEED
-
         elif state == BOTTOM:
             if self.tank_direction < 90:
                 self.tank_direction += ROTATE_DEGRE
