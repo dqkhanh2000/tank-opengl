@@ -51,14 +51,7 @@ def read_config_file():
 
 def draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # glColor3f(1, 0, 0)
-    # glPointSize(10)
-    # glBegin(GL_POINTS)
-    # glVertex2f(10, 10)
-    # glEnd()
-
-    # a =glReadPixels(10, 10,1,1,GL_RGB,GL_FLOAT)
-    # print(a[0][0][0], a[1][0][0], a[2][0][0])
+    
     tank.draw()
 
     for bullet in tank.list_bullet:

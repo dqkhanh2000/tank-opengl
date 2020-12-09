@@ -1,12 +1,10 @@
 {
-    "python.pythonPath": "C:\\Users\\phuon\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "python.pythonPath": "/usr/bin/python3",
     "python.autoComplete.extraPaths": [
         "./root_folder"
     ],
     "python.analysis.extraPaths": [
         "./root_folder"
-    ],
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    ]
 
 }
